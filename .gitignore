@@ -1,0 +1,4 @@
+*.swp
+build/*
+*.pbxuser
+*.mode1v3
