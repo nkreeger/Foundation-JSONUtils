@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		60D3C46D128DBDD700DCFF13 /* JSONUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 60D3C46C128DBDD700DCFF13 /* JSONUtils.m */; };
+		60D3C4CB128DC1C400DCFF13 /* NSArray+JSONUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 60D3C4CA128DC1C400DCFF13 /* NSArray+JSONUtils.m */; };
 		60E9B671128B037A005B2AFF /* NSDictionary+JSONUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 60E9B670128B037A005B2AFF /* NSDictionary+JSONUtils.m */; };
 		8DD76F9A0486AA7600D96B5E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8DD76F9C0486AA7600D96B5E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08FB779EFE84155DC02AAC07 /* Foundation.framework */; };
@@ -33,6 +34,8 @@
 		32A70AAB03705E1F00C91783 /* NSDictionary+JSONUtils_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+JSONUtils_Prefix.pch"; sourceTree = "<group>"; };
 		60D3C46B128DBDD700DCFF13 /* JSONUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONUtils.h; sourceTree = "<group>"; };
 		60D3C46C128DBDD700DCFF13 /* JSONUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSONUtils.m; sourceTree = "<group>"; };
+		60D3C4C9128DC1C400DCFF13 /* NSArray+JSONUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+JSONUtils.h"; sourceTree = "<group>"; };
+		60D3C4CA128DC1C400DCFF13 /* NSArray+JSONUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+JSONUtils.m"; sourceTree = "<group>"; };
 		60E9B66F128B037A005B2AFF /* NSDictionary+JSONUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+JSONUtils.h"; sourceTree = "<group>"; };
 		60E9B670128B037A005B2AFF /* NSDictionary+JSONUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+JSONUtils.m"; sourceTree = "<group>"; };
 		8DD76FA10486AA7600D96B5E /* NSDictionary+JSONUtils */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "NSDictionary+JSONUtils"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -71,6 +74,8 @@
 				08FB7796FE84155DC02AAC07 /* main.m */,
 				60D3C46B128DBDD700DCFF13 /* JSONUtils.h */,
 				60D3C46C128DBDD700DCFF13 /* JSONUtils.m */,
+				60D3C4C9128DC1C400DCFF13 /* NSArray+JSONUtils.h */,
+				60D3C4CA128DC1C400DCFF13 /* NSArray+JSONUtils.m */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -152,6 +157,7 @@
 				8DD76F9A0486AA7600D96B5E /* main.m in Sources */,
 				60E9B671128B037A005B2AFF /* NSDictionary+JSONUtils.m in Sources */,
 				60D3C46D128DBDD700DCFF13 /* JSONUtils.m in Sources */,
+				60D3C4CB128DC1C400DCFF13 /* NSArray+JSONUtils.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
