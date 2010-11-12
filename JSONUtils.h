@@ -7,13 +7,18 @@
 //
 //==============================================================================
 
+/*
+  NOTES:
+   - Roll all of category extensions into this file?
+   - Add a NSObject category for returning either a dictionary or an array
+     instead of assuming what the JSON values are.
+ */
+
 #import <Foundation/Foundation.h>
 
 
 //
 // @brief Typedef for determing JSON start type.
-//  XXXkreeger: Could use a "smart" NSObject category method for returning
-//              The array or dictionary version. (to-think-about)
 //
 typedef enum {
   eNone = 0,
