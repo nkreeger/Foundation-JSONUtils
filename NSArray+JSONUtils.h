@@ -10,8 +10,8 @@
 #import <Foundation/Foundation.h>
 
 
-@interface NSArray_JSONUtils : NSObject {
+@interface NSArray (JSONUtil)
 
-}
++ (NSArray *)arrayForJSON:(NSString *)aJSONString;
 
 @end

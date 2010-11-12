@@ -10,6 +10,11 @@
 #import "NSArray+JSONUtils.h"
 
 
-@implementation NSArray_JSONUtils
+@implementation NSArray (JSONUtil)
+
++ (NSArray *)arrayForJSON:(NSString *)aJSONString
+{
+  return nil;
+}
 
 @end
