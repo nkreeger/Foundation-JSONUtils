@@ -74,7 +74,7 @@
   // TODO: Work until all the ':' characters have been found.
   NSLog(@"JSONOBJECT: %@", aJSONObject);
   NSRange range = [aJSONObject rangeOfString:@":"];
-  if (range.location != NSNotFound) {
+  while (range.location != NSNotFound) {
     // Find the start of the symbol.
     unsigned int symStart = range.location;
     while (symStart > 0) {
@@ -100,13 +100,18 @@
     
     
     NSRange symRange = NSMakeRange(symStart, range.location - symStart);
-    NSString *symbol = [aJSONObject substringWithRange:symRange];
+    NSString *symbol = [[aJSONObject substringWithRange:symRange] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     NSLog(@"SYMBOL: %@", symbol);
     
     NSRange valueRange = NSMakeRange(valueStart, valueEnd - valueStart);
-    NSString *value = [aJSONObject substringWithRange:valueRange];
+    NSString *jsonvalue = [aJSONObject substringWithRange:valueRange];
+    NSObject *value = [self _objectForJSONValue:jsonvalue];
     NSLog(@"VALUE: %@", value);
-    [self _objectForJSONValue:value];
+    
+    range = [aJSONObject rangeOfString:@":"
+                               options:NSLiteralSearch
+                                 range:NSMakeRange(range.location + 1,
+                                                   [aJSONObject length] - range.location - 1)];
   }
   
   // Try to parse a symbol...
@@ -120,6 +125,15 @@
   unichar firstChar = [jsonValue characterAtIndex:0];
   switch (firstChar) {
     case '\'':
+    {
+      NSRange startRange = [aJSONValue rangeOfString:@"'"];
+      NSRange backRange = [aJSONValue rangeOfString:@"'"
+                                            options:NSBackwardsSearch];
+      NSRange strRange = NSMakeRange(startRange.location + 1,
+                                     backRange.location - startRange.location -1);
+      value = [aJSONValue substringWithRange:strRange];
+      break;
+    }
     case '\"':
       // TODO: Strip out the quotes
       NSLog(@" --> json value is a STRING");
