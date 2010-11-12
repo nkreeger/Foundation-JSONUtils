@@ -12,7 +12,7 @@
 
 @interface NSDictionary (JSONUtils_Private)
 
-+ (void)_parseJSONObject:(NSString *)aJSONObject;
++ (NSDictionary *)_parseJSONObject:(NSString *)aJSONObject;
 + (NSObject *)_objectForJSONValue:(NSString *)aJSONValue;
 
 @end
@@ -39,12 +39,7 @@
         break;
     }
   }
-#if DEBUG_MSG
-  NSLog(@"---- BRACES:");
-  NSLog(@"----   opening: %i", [openingBracesArray count]);
-  NSLog(@"----   closing: %i", [closingBracesArray count]);
-#endif
-  
+
   // Ensure that there is at least one layer.
   if ([openingBracesArray count] == 0) {
     NSLog(@"Invalid JSON string: %@", aJSONString);
@@ -57,22 +52,31 @@
   }
   
   // Append the first 'layer' at least for now...
+  NSDictionary *jsonDict = nil;
+
   for (unsigned int i = 0; i < [openingBracesArray count]; i++) {
     unsigned int openingIndex = [[openingBracesArray objectAtIndex:i] intValue];
     unsigned int closingIndex = [[closingBracesArray objectAtIndex:i] intValue];
     NSRange strRange = NSMakeRange(openingIndex,
                                    closingIndex - openingIndex + 1);
-    [self _parseJSONObject:[aJSONString substringWithRange:strRange]];
+    
+    if ([openingBracesArray count] == 1) {
+      jsonDict = [self _parseJSONObject:[aJSONString substringWithRange:strRange]];
+    }
+    else {
+      // hack, fix me later.
+    }
   }
 
-  return nil;
+  return jsonDict;
 }
 
-+ (void)_parseJSONObject:(NSString *)aJSONObject
++ (NSDictionary *)_parseJSONObject:(NSString *)aJSONObject
 {
+  NSDictionary *dict = [NSMutableDictionary dictionary];
+
   // TODO: Strip out all the braces to make this a bit easier (right?).
   // TODO: Work until all the ':' characters have been found.
-  NSLog(@"JSONOBJECT: %@", aJSONObject);
   NSRange range = [aJSONObject rangeOfString:@":"];
   while (range.location != NSNotFound) {
     // Find the start of the symbol.
@@ -101,20 +105,20 @@
     
     NSRange symRange = NSMakeRange(symStart, range.location - symStart);
     NSString *symbol = [[aJSONObject substringWithRange:symRange] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-    NSLog(@"SYMBOL: %@", symbol);
     
     NSRange valueRange = NSMakeRange(valueStart, valueEnd - valueStart);
     NSString *jsonvalue = [aJSONObject substringWithRange:valueRange];
     NSObject *value = [self _objectForJSONValue:jsonvalue];
-    NSLog(@"VALUE: %@", value);
     
+    [dict setValue:value forKey:symbol];
+
     range = [aJSONObject rangeOfString:@":"
                                options:NSLiteralSearch
                                  range:NSMakeRange(range.location + 1,
                                                    [aJSONObject length] - range.location - 1)];
   }
   
-  // Try to parse a symbol...
+  return dict;
 }
 
 + (NSObject *)_objectForJSONValue:(NSString *)aJSONValue
@@ -136,7 +140,6 @@
     }
     case '\"':
       // TODO: Strip out the quotes
-      NSLog(@" --> json value is a STRING");
       break;
       
     case 't':
