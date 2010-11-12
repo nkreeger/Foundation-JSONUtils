@@ -33,7 +33,18 @@ typedef enum {
 // @return The next block type (either object or an array)
 //
 EJSONBlockType PeakNextJSONBlockType(NSString *aJSONString,
-                                     unsigned int aStartPosition);
+                                     NSUInteger aStartPosition);
+
+//
+// @brief
+//
+NSString* GetNextJSONObjectString(NSString *aJSONString,
+                                  NSUInteger aStartPosition);
+
+//
+// @brief
+//
+NSDictionary* GetJSONObjectDictionary(NSString *aJSONObject);
 
 
 //------------------------------------------------------------------------------
@@ -42,5 +53,11 @@ EJSONBlockType PeakNextJSONBlockType(NSString *aJSONString,
 @interface NSString (MiscUtils)
 
 - (NSString *)stringByTrimmingWhitespace;
+- (NSString *)jsonSymbolFromLocation:(NSUInteger)aLocation
+                            outRange:(NSRange *)aOutRange;
+- (NSObject *)jsonObjectFromLocation:(NSUInteger)aLocation
+                            outRange:(NSRange *)aOutRange;
+- (NSNumber *)sniffNumberFromIndex:(NSUInteger)aStartIndex
+                      numberLength:(NSUInteger *)aOutLength;
 
 @end
