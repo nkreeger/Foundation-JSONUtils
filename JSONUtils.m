@@ -172,8 +172,10 @@ GetJSONObjectDictionary(NSString *aJSONObject)
 
       // Embedded object:
       case '{':
-        // TODO: Add a new dictionary...
         doSearch = NO;
+        NSString *jsonObject = GetNextJSONObjectString(self, charIndex);
+        *aOutRange = [self rangeOfString:jsonObject];
+        return GetJSONObjectDictionary(jsonObject);
         break;
 
       // Array:
@@ -199,8 +201,8 @@ GetJSONObjectDictionary(NSString *aJSONObject)
       case '9':
       {
         NSUInteger outLength;
-        NSNumber *number = [self sniffNumberFromIndex:charIndex 
-                                         numberLength:&outLength];
+        NSNumber *number = [self scanNumberFromIndex:charIndex 
+                                        numberLength:&outLength];
         *aOutRange = NSMakeRange(charIndex, outLength);
         return number;
         break;
@@ -213,8 +215,8 @@ GetJSONObjectDictionary(NSString *aJSONObject)
   return nil;
 }
 
-- (NSNumber *)sniffNumberFromIndex:(NSUInteger)aStartIndex
-                      numberLength:(NSUInteger *)aOutLength
+- (NSNumber *)scanNumberFromIndex:(NSUInteger)aStartIndex
+                     numberLength:(NSUInteger *)aOutLength
 {
   NSMutableString *str = [NSMutableString string];
   BOOL doSearch = YES;

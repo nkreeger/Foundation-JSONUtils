@@ -57,7 +57,7 @@ NSDictionary* GetJSONObjectDictionary(NSString *aJSONObject);
                             outRange:(NSRange *)aOutRange;
 - (NSObject *)jsonObjectFromLocation:(NSUInteger)aLocation
                             outRange:(NSRange *)aOutRange;
-- (NSNumber *)sniffNumberFromIndex:(NSUInteger)aStartIndex
-                      numberLength:(NSUInteger *)aOutLength;
+- (NSNumber *)scanNumberFromIndex:(NSUInteger)aStartIndex
+                     numberLength:(NSUInteger *)aOutLength;
 
 @end
