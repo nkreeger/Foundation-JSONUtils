@@ -7,21 +7,33 @@
 
 #import "NSDictionary+JSONUtils.h"
 
-#define DEBUG_MSG 1
+#import "JSONUtils.h"
 
 
+//------------------------------------------------------------------------------
+// REMOVE ME METHODS
 @interface NSDictionary (JSONUtils_Private)
 
++ (NSDictionary *)dictionaryForJSONOld:(NSString *)aJSONObject;
 + (NSDictionary *)_parseJSONObject:(NSString *)aJSONObject;
 + (NSObject *)_objectForJSONValue:(NSString *)aJSONValue;
 
 @end
 
 //------------------------------------------------------------------------------
+// JSONUtils category implementation for JSON.
 
 @implementation NSDictionary (JSONUtils)
 
 + (NSDictionary *)dictionaryForJSON:(NSString *)aJSONString
+{
+  // Dictionary assumes that the JSON value will be 
+  return nil;
+}
+
+
+// -----> OLD STUFF:
++ (NSDictionary *)dictionaryForJSONOld:(NSString *)aJSONString
 {
   // Find all the opening and closing curly braces.
   NSMutableArray *openingBracesArray = [NSMutableArray array];
@@ -104,7 +116,8 @@
     
     
     NSRange symRange = NSMakeRange(symStart, range.location - symStart);
-    NSString *symbol = [[aJSONObject substringWithRange:symRange] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    NSString *symbol =
+      [[aJSONObject substringWithRange:symRange] stringByTrimmingWhitespace];
     
     NSRange valueRange = NSMakeRange(valueStart, valueEnd - valueStart);
     NSString *jsonvalue = [aJSONObject substringWithRange:valueRange];
@@ -125,7 +138,7 @@
 {
   NSObject *value = nil;
   // Assume what the value might be by peaking at the string.
-  NSString *jsonValue = [aJSONValue stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+  NSString *jsonValue = [aJSONValue stringByTrimmingWhitespace];
   unichar firstChar = [jsonValue characterAtIndex:0];
   switch (firstChar) {
     case '\'':
@@ -144,6 +157,9 @@
       
     case 't':
       value = [NSNumber numberWithBool:YES];
+      break;
+    case 'n':
+      // Nil will fall through
       break;
     case 'f':
       value = [NSNumber numberWithBool:NO];
