@@ -1,14 +1,68 @@
 //==============================================================================
 //
-//  JSONUtils.m
+//  Foundation+JSONUtils.m
 //  Foundation+JSONUtils
 //
 //  @author Nick Kreeger <nick.kreeger@rd.io>
 //
 //==============================================================================
 
-#import "JSONUtils.h"
+#import "Foundation+JSONUtils.h"
 
+
+//------------------------------------------------------------------------------
+// NSString extensions
+
+@interface NSString (MiscUtils)
+
+- (NSString *)stringByTrimmingWhitespace;
+- (NSString *)substringFromIndex:(NSUInteger)aStartIndex
+                     toCharacter:(unichar)aStopChar;
+- (NSString *)reverseSubstringFromIndex:(NSUInteger)aStartIndex
+                            toCharacter:(unichar)aStopChar;
+- (NSNumber *)scanNumberFromIndex:(NSUInteger)aStartIndex
+                     numberLength:(NSUInteger *)aOutLength;
+
+@end
+
+
+/*
+ TODO: Clean all of this file up now that the merge is over.
+ */
+
+
+
+//
+// @brief Typedef for determing JSON start type.
+//
+typedef enum {
+  eNone = 0,
+  eObjectBlock = 1,
+  eArrayBlock = 2
+} EJSONBlockType;
+
+//
+// @brief Peak to determine what the next block type in a JSON string is.
+// @param aJSONString The JSON string to peak into.
+// @param aStartPosition The position to start scanning the string at.
+// @return The next block type (either object or an array)
+//
+EJSONBlockType PeakNextJSONBlockType(NSString *aJSONString,
+                                     NSUInteger aStartPosition);
+
+//
+// @brief
+//
+NSDictionary* GetJSONObjectDictionary(NSString *aJSONObject);
+
+//
+// @brief
+//
+NSArray* GetJSONArray(NSString *aJSONString);
+NSDictionary* GetJSONDictionary(NSString *aJSONString);
+
+
+//------------------------------------------------------------------------------
 
 EJSONBlockType
 PeakNextJSONBlockType(NSString *aJSONString, NSUInteger aStartPosition)
@@ -258,6 +312,37 @@ GetJSONDictionary(NSString *aJSONString)
 {
   return [self stringByTrimmingCharactersInSet:
           [NSCharacterSet whitespaceCharacterSet]];
+}
+
+@end
+
+//------------------------------------------------------------------------------
+
+@implementation NSDictionary (JSONUtils)
+
++ (NSDictionary *)dictionaryForJSON:(NSString *)aJSONString
+{
+  if (PeakNextJSONBlockType(aJSONString, 0) != eObjectBlock) {
+    // This API assumes that the string starts with a '{' char.
+    return nil;
+  }  
+  return GetJSONDictionary(aJSONString);
+}
+
+@end
+
+//------------------------------------------------------------------------------
+
+@implementation NSArray (JSONUtil)
+
++ (NSArray *)arrayForJSON:(NSString *)aJSONString
+{
+  if (PeakNextJSONBlockType(aJSONString, 0) != eArrayBlock) {
+    // This API assumes that the string starts with a '[' char.
+    return nil;
+  }
+  
+  return GetJSONArray(aJSONString);
 }
 
 @end

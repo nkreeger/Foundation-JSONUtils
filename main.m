@@ -1,7 +1,6 @@
 #import <Foundation/Foundation.h>
 
-#import "NSDictionary+JSONUtils.h"
-#import "NSArray+JSONUtils.h"
+#import "Foundation+JSONUtils.h"
 
 
 int main (int argc, const char * argv[]) {
