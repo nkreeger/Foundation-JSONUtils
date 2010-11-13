@@ -9,12 +9,19 @@
 
 #import "NSArray+JSONUtils.h"
 
+#import "JSONUtils.h"
+
 
 @implementation NSArray (JSONUtil)
 
 + (NSArray *)arrayForJSON:(NSString *)aJSONString
 {
-  return nil;
+  if (PeakNextJSONBlockType(aJSONString, 0) != eArrayBlock) {
+    // This API assumes that the string starts with a '[' char.
+    return nil;
+  }
+
+  return GetJSONArray(aJSONString);
 }
 
 @end

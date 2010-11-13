@@ -74,6 +74,79 @@ GetJSONObjectDictionary(NSString *aJSONObject)
   return jsonDict;
 }
 
+NSUInteger NextScanPoint(NSString *aJSONString, NSUInteger curIndex)
+{
+  // Scan until some ending chars are found.
+  NSUInteger index = curIndex;
+  while (index < [aJSONString length]) {
+    unichar curChar = [aJSONString characterAtIndex:index];
+    switch (curChar) {
+      case ',':
+      case '}':
+      case ']':
+        return index;
+    }
+    index++;
+  }
+  return index;
+}
+
+NSArray*
+GetJSONArray(NSString *aJSONString)
+{
+  NSMutableArray *array = [NSMutableArray array];
+  NSUInteger curLocation = 0;
+  NSUInteger arrayCount = [array count];
+  while (curLocation < [aJSONString length]) {
+    unichar curChar = [aJSONString characterAtIndex:curLocation];
+    switch (curChar) {
+      // Strings
+      case '\'':
+        [array addObject:[aJSONString substringFromIndex:curLocation + 1
+                                             toCharacter:'\'']];
+        break;
+      case '\"':
+        [array addObject:[aJSONString substringFromIndex:curLocation + 1
+                                             toCharacter:'\"']];
+         break;
+        
+      case 't':
+        [array addObject:[NSNumber numberWithBool:YES]];
+        break;
+      case 'f':
+        [array addObject:[NSNumber numberWithBool:NO]];
+        break;
+        
+      case '0':
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
+      case '8':
+      case '9':
+      case '.':
+      {
+        NSUInteger outLength;
+        NSNumber *number = [aJSONString scanNumberFromIndex:curLocation
+                                               numberLength:&outLength];
+        [array addObject:number];
+        break;
+      }
+    }
+
+    ++curLocation;
+    if (arrayCount != [array count]) {
+      curLocation = NextScanPoint(aJSONString, curLocation);
+      arrayCount = [array count];
+    }
+  }
+  
+  return array;
+}
+
 //------------------------------------------------------------------------------
 
 @implementation NSString (MiscUtils)
@@ -213,6 +286,19 @@ GetJSONObjectDictionary(NSString *aJSONObject)
   }
 
   return nil;
+}
+
+- (NSString *)substringFromIndex:(NSUInteger)aStartIndex
+                     toCharacter:(unichar)aStopChar
+{
+  NSUInteger index = aStartIndex;
+  while (index < [self length]) {
+    if ([self characterAtIndex:index] == aStopChar) {
+      break;
+    }
+    index++;
+  }
+  return [self substringWithRange:NSMakeRange(aStartIndex, index - aStartIndex)];
 }
 
 - (NSNumber *)scanNumberFromIndex:(NSUInteger)aStartIndex

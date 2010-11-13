@@ -46,6 +46,11 @@ NSString* GetNextJSONObjectString(NSString *aJSONString,
 //
 NSDictionary* GetJSONObjectDictionary(NSString *aJSONObject);
 
+//
+// @brief
+//
+NSArray* GetJSONArray(NSString *aJSONString);
+
 
 //------------------------------------------------------------------------------
 // NSString extensions (maybe stick this elsewhere)
@@ -53,6 +58,8 @@ NSDictionary* GetJSONObjectDictionary(NSString *aJSONObject);
 @interface NSString (MiscUtils)
 
 - (NSString *)stringByTrimmingWhitespace;
+- (NSString *)substringFromIndex:(NSUInteger)aStartIndex
+                     toCharacter:(unichar)aStopChar;
 - (NSString *)jsonSymbolFromLocation:(NSUInteger)aLocation
                             outRange:(NSRange *)aOutRange;
 - (NSObject *)jsonObjectFromLocation:(NSUInteger)aLocation
