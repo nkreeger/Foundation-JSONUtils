@@ -21,7 +21,7 @@
     // This API assumes that the string starts with a '{' char.
     return nil;
   }  
-  return GetJSONObjectDictionary(GetNextJSONObjectString(aJSONString, 0));
+  return GetJSONDictionary(aJSONString);
 }
 
 @end

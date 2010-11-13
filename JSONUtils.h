@@ -38,18 +38,13 @@ EJSONBlockType PeakNextJSONBlockType(NSString *aJSONString,
 //
 // @brief
 //
-NSString* GetNextJSONObjectString(NSString *aJSONString,
-                                  NSUInteger aStartPosition);
-
-//
-// @brief
-//
 NSDictionary* GetJSONObjectDictionary(NSString *aJSONObject);
 
 //
 // @brief
 //
 NSArray* GetJSONArray(NSString *aJSONString);
+NSDictionary* GetJSONDictionary(NSString *aJSONString);
 
 
 //------------------------------------------------------------------------------
@@ -60,10 +55,8 @@ NSArray* GetJSONArray(NSString *aJSONString);
 - (NSString *)stringByTrimmingWhitespace;
 - (NSString *)substringFromIndex:(NSUInteger)aStartIndex
                      toCharacter:(unichar)aStopChar;
-- (NSString *)jsonSymbolFromLocation:(NSUInteger)aLocation
-                            outRange:(NSRange *)aOutRange;
-- (NSObject *)jsonObjectFromLocation:(NSUInteger)aLocation
-                            outRange:(NSRange *)aOutRange;
+- (NSString *)reverseSubstringFromIndex:(NSUInteger)aStartIndex
+                            toCharacter:(unichar)aStopChar;
 - (NSNumber *)scanNumberFromIndex:(NSUInteger)aStartIndex
                      numberLength:(NSUInteger *)aOutLength;
 

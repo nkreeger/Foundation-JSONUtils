@@ -8,8 +8,12 @@ int main (int argc, const char * argv[]) {
   NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
   
   // JSON Object tests
-  NSString *jsonString = @"{ error: true, value: 'a value here' }";
-  NSDictionary *jsonDict = [NSDictionary dictionaryForJSON:jsonString];
+  NSString *jsonString;
+  NSDictionary *jsonDict;
+  NSArray *jsonArray;
+
+  jsonString = @"{ error: true, value: 'a value here' }";
+  jsonDict = [NSDictionary dictionaryForJSON:jsonString];
   assert([jsonDict count] == 2);
   assert([[jsonDict valueForKey:@"error"] boolValue]);
   assert([[jsonDict valueForKey:@"value"] isEqualToString:@"a value here"]);
@@ -37,7 +41,7 @@ int main (int argc, const char * argv[]) {
   
   // JSON array tests
   jsonString = @"['one', 'two', \"three\"]";
-  NSArray *jsonArray = [NSArray arrayForJSON:jsonString];
+  jsonArray = [NSArray arrayForJSON:jsonString];
   assert([jsonArray count] == 3);
   assert([[jsonArray objectAtIndex:0] isEqualToString:@"one"]);
   assert([[jsonArray objectAtIndex:1] isEqualToString:@"two"]);
