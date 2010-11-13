@@ -1,17 +1,31 @@
-//==============================================================================
 //
 //  Foundation+JSONUtils.m
-//  Foundation+JSONUtils
 //
-//  @author Nick Kreeger <nick.kreeger@rd.io>
+//  Copyright (c) 2010, Nick Kreeger <nick.kreeger@gmail.com>
 //
-//==============================================================================
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//  THE SOFTWARE.
+//
 
 #import "Foundation+JSONUtils.h"
 
 
 //------------------------------------------------------------------------------
-// NSString extensions
 
 @interface NSString (MiscUtils)
 
@@ -25,60 +39,7 @@
 
 @end
 
-
-/*
- TODO: Clean all of this file up now that the merge is over.
- */
-
-
-
-//
-// @brief Typedef for determing JSON start type.
-//
-typedef enum {
-  eNone = 0,
-  eObjectBlock = 1,
-  eArrayBlock = 2
-} EJSONBlockType;
-
-//
-// @brief Peak to determine what the next block type in a JSON string is.
-// @param aJSONString The JSON string to peak into.
-// @param aStartPosition The position to start scanning the string at.
-// @return The next block type (either object or an array)
-//
-EJSONBlockType PeakNextJSONBlockType(NSString *aJSONString,
-                                     NSUInteger aStartPosition);
-
-//
-// @brief
-//
-NSDictionary* GetJSONObjectDictionary(NSString *aJSONObject);
-
-//
-// @brief
-//
-NSArray* GetJSONArray(NSString *aJSONString);
-NSDictionary* GetJSONDictionary(NSString *aJSONString);
-
-
 //------------------------------------------------------------------------------
-
-EJSONBlockType
-PeakNextJSONBlockType(NSString *aJSONString, NSUInteger aStartPosition)
-{
-  for (NSUInteger i = aStartPosition; i < [aJSONString length]; ++i) {
-    unichar curChar = [aJSONString characterAtIndex:i];
-    switch (curChar) {
-      case '[':
-        return eArrayBlock;
-      case '{':
-        return eObjectBlock;
-    }
-  }
-  return eNone;
-}
-
 
 NSUInteger NextScanPoint(NSString *aJSONString, NSUInteger curIndex)
 {
@@ -318,14 +279,32 @@ GetJSONDictionary(NSString *aJSONString)
 
 //------------------------------------------------------------------------------
 
+@implementation NSString (JSONUtils)
+
+- (NSObject *)jsonValue
+{
+  for (NSUInteger i = 0; i < [self length]; ++i) {
+    unichar curChar = [self characterAtIndex:i];
+    switch (curChar) {
+      case '[':
+        return [NSArray arrayForJSON:self];
+        break;
+      case '{':
+        return [NSDictionary dictionaryForJSON:self];
+        break;
+    }
+  }
+  return nil;
+}
+
+@end
+
+//------------------------------------------------------------------------------
+  
 @implementation NSDictionary (JSONUtils)
 
 + (NSDictionary *)dictionaryForJSON:(NSString *)aJSONString
 {
-  if (PeakNextJSONBlockType(aJSONString, 0) != eObjectBlock) {
-    // This API assumes that the string starts with a '{' char.
-    return nil;
-  }  
   return GetJSONDictionary(aJSONString);
 }
 
@@ -337,11 +316,6 @@ GetJSONDictionary(NSString *aJSONString)
 
 + (NSArray *)arrayForJSON:(NSString *)aJSONString
 {
-  if (PeakNextJSONBlockType(aJSONString, 0) != eArrayBlock) {
-    // This API assumes that the string starts with a '[' char.
-    return nil;
-  }
-  
   return GetJSONArray(aJSONString);
 }
 
