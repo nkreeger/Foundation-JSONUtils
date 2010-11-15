@@ -39,6 +39,12 @@
 @end
 
 //------------------------------------------------------------------------------
+// TODO Clean up these methods, roll them into NSString.
+
+NSArray* GetJSONArray(NSString *aJSONString);
+NSDictionary* GetJSONDictionary(NSString *aJSONString);
+
+//------------------------------------------------------------------------------
 
 NSUInteger NextScanPoint(NSString *aJSONString, NSUInteger curIndex)
 {
@@ -59,30 +65,61 @@ NSUInteger NextScanPoint(NSString *aJSONString, NSUInteger curIndex)
   return index;
 }
 
-NSArray*
-GetJSONArray(NSString *aJSONString)
+NSUInteger FindClosingBracket(NSString *aJSONString,
+                              NSUInteger aStartIndex,
+                              unichar aClosingBracket)
 {
-  NSMutableArray *array = [NSMutableArray array];
-  NSUInteger curLocation = 0;
-  NSUInteger arrayCount = [array count];
-  while (curLocation < [aJSONString length]) {
-    unichar curChar = [aJSONString characterAtIndex:curLocation];
+  NSUInteger index = aStartIndex;
+  while (index < [aJSONString length]) {
+    // For now assume that any closing bracket is OK. (Fix me later)
+    if ([aJSONString characterAtIndex:index] == aClosingBracket) {
+      return index;
+    }
+    ++index;
+  }
+  return NSNotFound;
+}
+
+NSObject*
+FindNextJSONObject(NSString *aJSONString,
+                   NSUInteger aStartIndex,
+                   NSUInteger *aOutSearchIndex,
+                   BOOL aSkipArrays)
+{
+  // NOTE: Most of these methods can be converted to categories of NSString right?
+  NSUInteger index = aStartIndex;
+  while (index < [aJSONString length]) {
+    unichar curChar = [aJSONString characterAtIndex:index];
     switch (curChar) {
       case '\'':
-        [array addObject:[aJSONString substringFromIndex:curLocation + 1
-                                             toCharacter:'\'']];
-        break;
+        *aOutSearchIndex = NextScanPoint(aJSONString, index);
+        return [aJSONString substringFromIndex:index + 1 toCharacter:'\''];
+
       case '\"':
-        [array addObject:[aJSONString substringFromIndex:curLocation + 1
-                                             toCharacter:'\"']];
-         break;
+        *aOutSearchIndex = NextScanPoint(aJSONString, index);
+        return [aJSONString substringFromIndex:index + 1 toCharacter:'\"'];
       
       case 't':
-        [array addObject:[NSNumber numberWithBool:YES]];
-        break;
+        *aOutSearchIndex = NextScanPoint(aJSONString, index);
+        return [NSNumber numberWithBool:YES];
+
       case 'f':
-        [array addObject:[NSNumber numberWithBool:NO]];
-        break;
+        *aOutSearchIndex = NextScanPoint(aJSONString, index);
+        return [NSNumber numberWithBool:NO];
+
+      case '{':
+        *aOutSearchIndex = FindClosingBracket(aJSONString, index, '}');
+        return GetJSONDictionary([aJSONString substringFromIndex:index]);
+
+      case '[':
+        if (!aSkipArrays) {
+          *aOutSearchIndex = FindClosingBracket(aJSONString, index, ']');
+          return GetJSONArray([aJSONString substringFromIndex:index]);
+        }
+        
+      case 'n':
+        // Null objects aren't super useful, just return out of this method.
+        return nil;
         
       case '0':
       case '1':
@@ -96,21 +133,36 @@ GetJSONArray(NSString *aJSONString)
       case '9':
       case '.':
       {
+       // XXX KREEGER: Get rid of this API to have  an out-val
         NSUInteger outLength;
-        NSNumber *number = [aJSONString scanNumberFromIndex:curLocation
-                                               numberLength:&outLength];
-        [array addObject:number];
-        break;
+        *aOutSearchIndex = NextScanPoint(aJSONString, index);
+        return [aJSONString scanNumberFromIndex:index numberLength:&outLength];
       }
     }
+    ++index;
+  }
+  return nil;
+}
 
-    ++curLocation;
-    if (arrayCount != [array count]) {
-      curLocation = NextScanPoint(aJSONString, curLocation);
-      arrayCount = [array count];
+NSArray*
+GetJSONArray(NSString *aJSONString)
+{
+  NSMutableArray *array = [NSMutableArray array];
+  NSUInteger curLocation = NextScanPoint(aJSONString, 0);
+  while (curLocation < [aJSONString length]) {
+    NSUInteger newLocation = 0;
+    NSObject *value = FindNextJSONObject(aJSONString,
+                                         curLocation,
+                                         &newLocation,
+                                         YES);
+    if (value) {
+      [array addObject:value];
+      curLocation = newLocation;
+    }
+    else {
+      ++curLocation;
     }
   }
-  
   return array;
 }
 
@@ -119,8 +171,6 @@ GetJSONDictionary(NSString *aJSONString)
 {
   NSMutableDictionary *dict = [NSMutableDictionary dictionary];
   NSUInteger curLocation = NextScanPoint(aJSONString, 0);
-  NSUInteger dictCount = [dict count];
-
   while (curLocation < [aJSONString length]) {
     unichar curChar = [aJSONString characterAtIndex:curLocation];
     switch (curChar) {
@@ -130,74 +180,22 @@ GetJSONDictionary(NSString *aJSONString)
         if (!key) {
           break;
         }
-        
-        NSObject *value = nil;
-        NSUInteger valueLocation = curLocation + 1;
-        while (valueLocation < [aJSONString length]) {
-          unichar curChar = [aJSONString characterAtIndex:valueLocation];
-          switch (curChar) {
-            case '\'':
-              value = [aJSONString substringFromIndex:valueLocation + 1
-                                          toCharacter:'\''];
-              break;
-            case '\"':
-              value = [aJSONString substringFromIndex:valueLocation + 1
-                                          toCharacter:'\"'];
-              break;
-              
-            case 't':
-              value = [NSNumber numberWithBool:YES];
-              break;
-            case 'f':
-              value = [NSNumber numberWithBool:NO];
-              break;
-              
-            case '{':
-              value = GetJSONDictionary([aJSONString substringFromIndex:valueLocation]);
-              // Need to do this in other places too.
-              curLocation += NextScanPoint(aJSONString, valueLocation);
-              break;
-              
-            case '0':
-            case '1':
-            case '2':
-            case '3':
-            case '4':
-            case '5':
-            case '6':
-            case '7':
-            case '8':
-            case '9':
-            case '.':
-            {
-              NSUInteger outLength;
-              value = [aJSONString scanNumberFromIndex:valueLocation
-                                          numberLength:&outLength];
-              break;
-            }
-          }
-          
-          ++valueLocation;
-          if (value) {
-            break;
-          }
+        NSUInteger newLocation = 0;
+        NSObject *value = FindNextJSONObject(aJSONString,
+                                             curLocation + 1,
+                                             &newLocation,
+                                             NO);
+        if (!value) {
+          break;
         }
-        
-        if (value) {
-          [dict setValue:value forKey:key];
-        }
-        
+
+        [dict setValue:value forKey:key];
+        curLocation = newLocation;        
         break;
       }
     }
-    
     ++curLocation;
-    if (dictCount != [dict count]) {
-//      curLocation = NextScanPoint(aJSONString, curLocation);
-//      dictCount = [dict count];
-    }
   }
-
   return dict;
 }
 

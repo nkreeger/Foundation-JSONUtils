@@ -37,7 +37,7 @@
 		60D3C46C128DBDD700DCFF13 /* Foundation+JSONUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Foundation+JSONUtils.m"; sourceTree = "<group>"; };
 		60DBDAA8128F0B1400F3BAF7 /* Foundation+JSONUtils-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Foundation+JSONUtils-Info.plist"; sourceTree = "<group>"; };
 		60DBDB98128F0D7B00F3BAF7 /* Foundation+JSONUtils.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = "Foundation+JSONUtils.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
-		8DD76FA10486AA7600D96B5E /* Foundation+JSONUtils_tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Foundation+JSONUtils_tests"; sourceTree = BUILT_PRODUCTS_DIR; };
+		8DD76FA10486AA7600D96B5E /* Foundation+JSONUtils_Test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Foundation+JSONUtils_Test"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6859EA3029092ED04C91782 /* NSFoundation+JSONUtils.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = "NSFoundation+JSONUtils.1"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -95,7 +95,7 @@
 		1AB674ADFE9D54B511CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8DD76FA10486AA7600D96B5E /* Foundation+JSONUtils_tests */,
+				8DD76FA10486AA7600D96B5E /* Foundation+JSONUtils_Test */,
 				60DBDB98128F0D7B00F3BAF7 /* Foundation+JSONUtils.framework */,
 			);
 			name = Products;
@@ -141,9 +141,9 @@
 			productReference = 60DBDB98128F0D7B00F3BAF7 /* Foundation+JSONUtils.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		8DD76F960486AA7600D96B5E /* NSDictionary+JSONUtils */ = {
+		8DD76F960486AA7600D96B5E /* Foundation+JSONUtils_Test */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1DEB927408733DD40010E9CD /* Build configuration list for PBXNativeTarget "NSDictionary+JSONUtils" */;
+			buildConfigurationList = 1DEB927408733DD40010E9CD /* Build configuration list for PBXNativeTarget "Foundation+JSONUtils_Test" */;
 			buildPhases = (
 				8DD76F990486AA7600D96B5E /* Sources */,
 				8DD76F9B0486AA7600D96B5E /* Frameworks */,
@@ -153,10 +153,10 @@
 			);
 			dependencies = (
 			);
-			name = "NSDictionary+JSONUtils";
+			name = "Foundation+JSONUtils_Test";
 			productInstallPath = "$(HOME)/bin";
 			productName = "NSDictionary+JSONUtils";
-			productReference = 8DD76FA10486AA7600D96B5E /* Foundation+JSONUtils_tests */;
+			productReference = 8DD76FA10486AA7600D96B5E /* Foundation+JSONUtils_Test */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -178,7 +178,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				8DD76F960486AA7600D96B5E /* NSDictionary+JSONUtils */,
+				8DD76F960486AA7600D96B5E /* Foundation+JSONUtils_Test */,
 				60DBDB97128F0D7B00F3BAF7 /* Foundation+JSONUtils */,
 			);
 		};
@@ -227,7 +227,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Foundation+JSONUtils_Prefix.pch";
 				INSTALL_PATH = /usr/local/bin;
-				PRODUCT_NAME = "Foundation+JSONUtils_Prefix";
+				PRODUCT_NAME = "Foundation+JSONUtils_Test";
 			};
 			name = Debug;
 		};
@@ -327,7 +327,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1DEB927408733DD40010E9CD /* Build configuration list for PBXNativeTarget "NSDictionary+JSONUtils" */ = {
+		1DEB927408733DD40010E9CD /* Build configuration list for PBXNativeTarget "Foundation+JSONUtils_Test" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1DEB927508733DD40010E9CD /* Debug */,
