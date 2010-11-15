@@ -246,26 +246,6 @@ GetJSONDictionary(NSString *aJSONString)
   return nil;
 }
 
-- (NSString *)reverseSubstringFromIndex:(NSUInteger)aStartIndex
-                            toCharacter:(unichar)aStopChar
-{
-  //
-  // XXXkreeger HACK HACK HACK, update the API to reflect these changes or
-  //  something soon!
-  //
-  NSUInteger index = aStartIndex;
-  while (index > 0) {
-    if ([self characterAtIndex:index] == aStopChar ||
-        [self characterAtIndex:index] == '{' ||
-        [self characterAtIndex:index] == ',')
-    {
-      break;
-    }
-    --index;
-  }
-  return [self substringWithRange:NSMakeRange(index + 1, aStartIndex - index - 1)];
-}
-
 - (NSNumber *)scanNumberFromIndex:(NSUInteger)aStartIndex
                      numberLength:(NSUInteger *)aOutLength
 {
