@@ -3,5 +3,41 @@
 
 == About
 
-This project provides JSON conversion methods to NSString, NSDictionary, and
-NSArray Foundation classes.
+This project provides JSON conversion methods to NSDictionary, NSArray, and
+NSString Foundation classes. The current implementation (Version 0.5) currently
+only supports converting JSON to Foundation classes. Future releases will
+contain support for converting Foundation classes back to JSON strings.
+
+== Usage
+
+This project can be used either two ways:
+1.) Adding the Foundation+JSONUtils.h and Foundation+Utils.m file to your project.
+2.) Building the Foundation+JSONUtils.framework target inside the Xcode project file.
+
+== Examples
+
+Converting a string containing JSON values can be done a number of ways.
+
+1.) Converting a JSON object to a NSDictionary instance:
+
+    NSString *jsonStr = @"{ \"foo\" : \"bar\" }";
+    NSDictionary *jsonDict = [NSDictionary dictionaryForJSON:jsonStr];
+    NSLog(@" FOO: %@", [jsonDict valueForKey:@"foo"]);
+    
+2.) Converting a JSON array to a NSArray instance:
+
+    NSString *jsonStr = @"[123, 321, 456]";
+    NSArray *jsonArray = [NSArray arrayForJSON:jsonStr];
+    NSLog(@"First value : %i", [[jsonArray objectAtIndex:0] intValue]);
+    
+3.) Converting a NSString with JSON data to a NSArray or a NSDictionary:
+
+    NSString *jsonArrayStr = @"[123, 321, 456]";
+    NSString *jsonObjectStr = @"{ \"foo\" : \"bar\" }";
+    NSDictionary *jsonDict = [jsonObjectStr JSONValue];
+    NSArray *jsonArray = [jsonArray JSONValue];
+
+== NOTES
+
+* When using the raw source files, refer to the Foundation+JSONUtils.h file for
+versioning information.

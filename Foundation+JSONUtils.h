@@ -34,7 +34,7 @@
 //         - A NSDictionary pointer if the data represents a JSON object.
 //         - Nil if the string doesn't represent a valid JSON structure.
 //
-- (NSObject *)jsonValue;
+- (NSObject *)JSONValue;
 
 @end
 

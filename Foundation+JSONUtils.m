@@ -294,7 +294,7 @@ GetJSONDictionary(NSString *aJSONString)
 
 @implementation NSString (JSONUtils)
 
-- (NSObject *)jsonValue
+- (NSObject *)JSONValue
 {
   for (NSUInteger i = 0; i < [self length]; ++i) {
     unichar curChar = [self characterAtIndex:i];
