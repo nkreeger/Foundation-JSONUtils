@@ -27,7 +27,7 @@
 
 //------------------------------------------------------------------------------
 
-@interface NSString (MiscUtils)
+@interface NSString (MiscJSONUtils)
 
 - (NSString *)stringByTrimmingWhitespace;
 - (NSString *)substringFromIndex:(NSUInteger)aStartIndex
@@ -100,7 +100,7 @@ GetJSONDictionary(NSString *aJSONString)
 
 //------------------------------------------------------------------------------
 
-@implementation NSString (MiscUtils)
+@implementation NSString (MiscJSONUtils)
 
 - (NSString *)substringFromIndex:(NSUInteger)aStartIndex
                      toCharacter:(unichar)aStopChar
