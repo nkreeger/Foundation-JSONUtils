@@ -33,8 +33,7 @@
 - (NSString *)substringFromIndex:(NSUInteger)aStartIndex
                      toCharacter:(unichar)aStopChar;
 - (NSString *)reverseJSONKeyFromIndex:(NSUInteger)aStartIndex;
-- (NSNumber *)scanNumberFromIndex:(NSUInteger)aStartIndex
-                     numberLength:(NSUInteger *)aOutLength;
+- (NSNumber *)scanNumberFromIndex:(NSUInteger)aStartIndex;
 
 @end
 
@@ -132,12 +131,8 @@ FindNextJSONObject(NSString *aJSONString,
       case '8':
       case '9':
       case '.':
-      {
-       // XXX KREEGER: Get rid of this API to have  an out-val
-        NSUInteger outLength;
         *aOutSearchIndex = NextScanPoint(aJSONString, index);
-        return [aJSONString scanNumberFromIndex:index numberLength:&outLength];
-      }
+        return [aJSONString scanNumberFromIndex:index];
     }
     ++index;
   }
@@ -247,7 +242,6 @@ GetJSONDictionary(NSString *aJSONString)
 }
 
 - (NSNumber *)scanNumberFromIndex:(NSUInteger)aStartIndex
-                     numberLength:(NSUInteger *)aOutLength
 {
   NSMutableString *str = [NSMutableString string];
   BOOL doSearch = YES;
