@@ -35,6 +35,7 @@ int main (int argc, const char * argv[]) {
   // JSON Object tests
   NSString *jsonString;
   NSDictionary *jsonDict;
+  NSDictionary *embeddedDict;
   NSArray *jsonArray;
 
   jsonString = @"{ \"error\": true, \"value\": 'a value here' }";
@@ -57,7 +58,7 @@ int main (int argc, const char * argv[]) {
   
   jsonString = @"{ \"object\": { \"foo\": 'bar' } }";
   jsonDict = [NSDictionary dictionaryForJSON:jsonString];
-  NSDictionary *embeddedDict = [jsonDict valueForKey:@"object"];
+  embeddedDict = [jsonDict valueForKey:@"object"];
   assert([jsonDict count] == 1);
   assert([embeddedDict isKindOfClass:[NSDictionary class]]);
   assert([embeddedDict count] == 1);
@@ -98,7 +99,15 @@ int main (int argc, const char * argv[]) {
   assert([[jsonArray objectAtIndex:0] intValue] == 123);
   assert([[jsonArray objectAtIndex:1] intValue] == 321);
   assert([[jsonArray objectAtIndex:2] floatValue] == 12.21f);
-
+  
+  jsonString = @"[{\"foo\" : true}, {\"rab\" : false}]";
+  jsonArray = [NSArray arrayForJSON:jsonString];
+  assert([jsonArray count] == 2);
+  assert([[jsonArray objectAtIndex:0] count] == 1);
+  assert([[jsonArray objectAtIndex:1] count] == 1);
+  assert([[[jsonArray objectAtIndex:0] valueForKey:@"foo"] boolValue]);
+  assert(![[[jsonArray objectAtIndex:1] valueForKey:@"rab"] boolValue]);
+  
   NSLog(@"All Tests Passed");
   [pool drain];
   return 0;

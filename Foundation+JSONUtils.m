@@ -71,7 +71,8 @@ GetJSONDictionary(NSString *aJSONString)
 {
   NSMutableDictionary *dict = [NSMutableDictionary dictionary];
   NSUInteger curLocation = [aJSONString indexOfNextJSONScanPoint:0];
-  while (curLocation < [aJSONString length]) {
+  BOOL doSearch = YES;
+  while (curLocation < [aJSONString length] && doSearch) {
     unichar curChar = [aJSONString characterAtIndex:curLocation];
     switch (curChar) {
       case ':':
@@ -92,6 +93,9 @@ GetJSONDictionary(NSString *aJSONString)
         curLocation = newLocation;        
         break;
       }
+      case ',':
+        doSearch = NO;
+        break;
     }
     ++curLocation;
   }
@@ -196,6 +200,7 @@ GetJSONDictionary(NSString *aJSONString)
 - (NSUInteger)indexOfNextJSONScanPoint:(NSUInteger)aStartIndex
 {
   NSUInteger index = aStartIndex;
+  BOOL ignore = NO;
   while (index < [self length]) {
     unichar curChar = [self characterAtIndex:index];
     switch (curChar) {
@@ -204,7 +209,15 @@ GetJSONDictionary(NSString *aJSONString)
       case '}':
       case '[':
       case ']':
-        return index;
+        if (!ignore) {
+          return index;
+        }
+        break;
+      
+      case '\"':
+      case '\'':
+        ignore = !ignore;
+        break;
     }
     index++;
   }
