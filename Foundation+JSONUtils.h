@@ -1,5 +1,5 @@
 //
-//  Foundation+JSONUtils.h
+//  Foundation+JSONUtils.h, version 0.5
 //
 //  Copyright (c) 2010, Nick Kreeger <nick.kreeger@gmail.com>
 //
