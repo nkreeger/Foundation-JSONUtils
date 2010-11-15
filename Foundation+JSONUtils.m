@@ -36,6 +36,9 @@
 - (NSNumber *)scanNumberFromIndex:(NSUInteger)aStartIndex;
 - (NSUInteger)closingBracket:(unichar)aBracketChar
                    fromIndex:(NSUInteger)aStartIndex;
+- (NSObject *)jsonObjectFromIndex:(NSUInteger)aStartIndex
+                       skipArrays:(BOOL)aSkipArrays
+                   outSearchIndex:(NSUInteger *)aOutSearchIndex;
 
 @end
 
@@ -66,66 +69,6 @@ NextScanPoint(NSString *aJSONString, NSUInteger curIndex)
   return index;
 }
 
-NSObject*
-FindNextJSONObject(NSString *aJSONString,
-                   NSUInteger aStartIndex,
-                   NSUInteger *aOutSearchIndex,
-                   BOOL aSkipArrays)
-{
-  // NOTE: Most of these methods can be converted to categories of NSString right?
-  NSUInteger index = aStartIndex;
-  while (index < [aJSONString length]) {
-    unichar curChar = [aJSONString characterAtIndex:index];
-    switch (curChar) {
-      case '\'':
-        *aOutSearchIndex = NextScanPoint(aJSONString, index);
-        return [aJSONString substringFromIndex:index + 1 toCharacter:'\''];
-
-      case '\"':
-        *aOutSearchIndex = NextScanPoint(aJSONString, index);
-        return [aJSONString substringFromIndex:index + 1 toCharacter:'\"'];
-      
-      case 't':
-        *aOutSearchIndex = NextScanPoint(aJSONString, index);
-        return [NSNumber numberWithBool:YES];
-
-      case 'f':
-        *aOutSearchIndex = NextScanPoint(aJSONString, index);
-        return [NSNumber numberWithBool:NO];
-
-      case '{':
-        *aOutSearchIndex = [aJSONString closingBracket:'}' fromIndex:index];
-        return GetJSONDictionary([aJSONString substringFromIndex:index]);
-
-      case '[':
-        if (!aSkipArrays) {
-          *aOutSearchIndex = [aJSONString closingBracket:']' fromIndex:index];
-          return GetJSONArray([aJSONString substringFromIndex:index]);
-        }
-
-      case 'n':
-        // Null objects aren't super useful, just return out of this method.
-        return nil;
-        
-      case '0':
-      case '1':
-      case '2':
-      case '3':
-      case '4':
-      case '5':
-      case '6':
-      case '7':
-      case '8':
-      case '9':
-      case '.':
-        *aOutSearchIndex = NextScanPoint(aJSONString, index);
-        return [aJSONString scanNumberFromIndex:index];
-    }
-    ++index;
-  }
-  return nil;
-}
-
 NSArray*
 GetJSONArray(NSString *aJSONString)
 {
@@ -133,10 +76,9 @@ GetJSONArray(NSString *aJSONString)
   NSUInteger curLocation = NextScanPoint(aJSONString, 0);
   while (curLocation < [aJSONString length]) {
     NSUInteger newLocation = 0;
-    NSObject *value = FindNextJSONObject(aJSONString,
-                                         curLocation,
-                                         &newLocation,
-                                         YES);
+    NSObject *value = [aJSONString jsonObjectFromIndex:curLocation
+                                            skipArrays:YES
+                                        outSearchIndex:&newLocation];
     if (value) {
       [array addObject:value];
       curLocation = newLocation;
@@ -163,10 +105,9 @@ GetJSONDictionary(NSString *aJSONString)
           break;
         }
         NSUInteger newLocation = 0;
-        NSObject *value = FindNextJSONObject(aJSONString,
-                                             curLocation + 1,
-                                             &newLocation,
-                                             NO);
+        NSObject *value = [aJSONString jsonObjectFromIndex:curLocation
+                                                skipArrays:NO
+                                            outSearchIndex:&newLocation];
         if (!value) {
           break;
         }
@@ -274,6 +215,64 @@ GetJSONDictionary(NSString *aJSONString)
     ++index;
   }
   return NSNotFound;
+}
+
+- (NSObject *)jsonObjectFromIndex:(NSUInteger)aStartIndex
+                       skipArrays:(BOOL)aSkipArrays
+                   outSearchIndex:(NSUInteger *)aOutSearchIndex
+{
+  // NOTE: Most of these methods can be converted to categories of NSString right?
+  NSUInteger index = aStartIndex;
+  while (index < [self length]) {
+    unichar curChar = [self characterAtIndex:index];
+    switch (curChar) {
+      case '\'':
+        *aOutSearchIndex = NextScanPoint(self, index);
+        return [self substringFromIndex:index + 1 toCharacter:'\''];
+        
+      case '\"':
+        *aOutSearchIndex = NextScanPoint(self, index);
+        return [self substringFromIndex:index + 1 toCharacter:'\"'];
+        
+      case 't':
+        *aOutSearchIndex = NextScanPoint(self, index);
+        return [NSNumber numberWithBool:YES];
+        
+      case 'f':
+        *aOutSearchIndex = NextScanPoint(self, index);
+        return [NSNumber numberWithBool:NO];
+        
+      case '{':
+        *aOutSearchIndex = [self closingBracket:'}' fromIndex:index];
+        return GetJSONDictionary([self substringFromIndex:index]);
+        
+      case '[':
+        if (!aSkipArrays) {
+          *aOutSearchIndex = [self closingBracket:']' fromIndex:index];
+          return GetJSONArray([self substringFromIndex:index]);
+        }
+        
+      case 'n':
+        // Null objects aren't super useful, just return out of this method.
+        return nil;
+        
+      case '0':
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
+      case '8':
+      case '9':
+      case '.':
+        *aOutSearchIndex = NextScanPoint(self, index);
+        return [self scanNumberFromIndex:index];
+    }
+    ++index;
+  }
+  return nil;
 }
 
 - (NSString *)stringByTrimmingWhitespace
