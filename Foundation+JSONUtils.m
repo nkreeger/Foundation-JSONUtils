@@ -34,6 +34,8 @@
                      toCharacter:(unichar)aStopChar;
 - (NSString *)reverseJSONKeyFromIndex:(NSUInteger)aStartIndex;
 - (NSNumber *)scanNumberFromIndex:(NSUInteger)aStartIndex;
+- (NSUInteger)closingBracket:(unichar)aBracketChar
+                   fromIndex:(NSUInteger)aStartIndex;
 
 @end
 
@@ -45,9 +47,9 @@ NSDictionary* GetJSONDictionary(NSString *aJSONString);
 
 //------------------------------------------------------------------------------
 
-NSUInteger NextScanPoint(NSString *aJSONString, NSUInteger curIndex)
+NSUInteger
+NextScanPoint(NSString *aJSONString, NSUInteger curIndex)
 {
-  // Scan until some ending chars are found.
   NSUInteger index = curIndex;
   while (index < [aJSONString length]) {
     unichar curChar = [aJSONString characterAtIndex:index];
@@ -62,21 +64,6 @@ NSUInteger NextScanPoint(NSString *aJSONString, NSUInteger curIndex)
     index++;
   }
   return index;
-}
-
-NSUInteger FindClosingBracket(NSString *aJSONString,
-                              NSUInteger aStartIndex,
-                              unichar aClosingBracket)
-{
-  NSUInteger index = aStartIndex;
-  while (index < [aJSONString length]) {
-    // For now assume that any closing bracket is OK. (Fix me later)
-    if ([aJSONString characterAtIndex:index] == aClosingBracket) {
-      return index;
-    }
-    ++index;
-  }
-  return NSNotFound;
 }
 
 NSObject*
@@ -107,15 +94,15 @@ FindNextJSONObject(NSString *aJSONString,
         return [NSNumber numberWithBool:NO];
 
       case '{':
-        *aOutSearchIndex = FindClosingBracket(aJSONString, index, '}');
+        *aOutSearchIndex = [aJSONString closingBracket:'}' fromIndex:index];
         return GetJSONDictionary([aJSONString substringFromIndex:index]);
 
       case '[':
         if (!aSkipArrays) {
-          *aOutSearchIndex = FindClosingBracket(aJSONString, index, ']');
+          *aOutSearchIndex = [aJSONString closingBracket:']' fromIndex:index];
           return GetJSONArray([aJSONString substringFromIndex:index]);
         }
-        
+
       case 'n':
         // Null objects aren't super useful, just return out of this method.
         return nil;
@@ -271,6 +258,22 @@ GetJSONDictionary(NSString *aJSONString)
   }
   NSNumberFormatter *nf = [[NSNumberFormatter alloc] init];
   return [nf numberFromString:str];
+}
+
+- (NSUInteger)closingBracket:(unichar)aBracketChar
+                   fromIndex:(NSUInteger)aStartIndex
+{
+  NSUInteger index = aStartIndex;
+  while (index < [self length]) {
+    // For now assume that any closing bracket is OK. (Fix me later)
+    // XXXkreeger: Use this method stub for now. Down the road I'm going to
+    // want to add some support for figuring out if a bracket is in a string.
+    if ([self characterAtIndex:index] == aBracketChar) {
+      return index;
+    }
+    ++index;
+  }
+  return NSNotFound;
 }
 
 - (NSString *)stringByTrimmingWhitespace
