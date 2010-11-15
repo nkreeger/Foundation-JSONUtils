@@ -32,8 +32,7 @@
 - (NSString *)stringByTrimmingWhitespace;
 - (NSString *)substringFromIndex:(NSUInteger)aStartIndex
                      toCharacter:(unichar)aStopChar;
-- (NSString *)reverseSubstringFromIndex:(NSUInteger)aStartIndex
-                            toCharacter:(unichar)aStopChar;
+- (NSString *)reverseJSONKeyFromIndex:(NSUInteger)aStartIndex;
 - (NSNumber *)scanNumberFromIndex:(NSUInteger)aStartIndex
                      numberLength:(NSUInteger *)aOutLength;
 
@@ -127,8 +126,11 @@ GetJSONDictionary(NSString *aJSONString)
     switch (curChar) {
       case ':':
       {
-        NSString *key = [aJSONString reverseSubstringFromIndex:curLocation
-                                                   toCharacter:' '];
+        NSString *key = [aJSONString reverseJSONKeyFromIndex:curLocation];
+        if (!key) {
+          break;
+        }
+        
         NSObject *value = nil;
         NSUInteger valueLocation = curLocation + 1;
         while (valueLocation < [aJSONString length]) {
@@ -214,6 +216,36 @@ GetJSONDictionary(NSString *aJSONString)
     ++index;
   }
   return [self substringWithRange:NSMakeRange(aStartIndex, index - aStartIndex)];
+}
+
+- (NSString *)reverseJSONKeyFromIndex:(NSUInteger)aStartIndex
+{
+  // Go backwards to find the key's value that is wrapped in quotes.
+  NSUInteger index = aStartIndex;
+  NSUInteger closingQuoteIndex = 0;
+  NSUInteger openingQuoteIndex = 0;
+  BOOL foundClosingQuotes = NO;
+  BOOL foundOpeningQuotes = NO;
+  while (index > 0) {
+    if ([self characterAtIndex:index] == '\"') {
+      if (!foundClosingQuotes) {
+        closingQuoteIndex = index;
+        foundClosingQuotes = YES;
+      }
+      else {
+        openingQuoteIndex = index;
+        foundOpeningQuotes = YES;
+        break;
+      }
+    }
+    --index;
+  }
+  if (foundOpeningQuotes && foundClosingQuotes) {
+    NSRange range = NSMakeRange(openingQuoteIndex + 1,
+                                closingQuoteIndex - openingQuoteIndex - 1);
+    return [self substringWithRange:range];
+  }
+  return nil;
 }
 
 - (NSString *)reverseSubstringFromIndex:(NSUInteger)aStartIndex

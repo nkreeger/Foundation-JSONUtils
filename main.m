@@ -37,25 +37,25 @@ int main (int argc, const char * argv[]) {
   NSDictionary *jsonDict;
   NSArray *jsonArray;
 
-  jsonString = @"{ error: true, value: 'a value here' }";
+  jsonString = @"{ \"error\": true, \"value\": 'a value here' }";
   jsonDict = [NSDictionary dictionaryForJSON:jsonString];
   assert([jsonDict count] == 2);
   assert([[jsonDict valueForKey:@"error"] boolValue]);
   assert([[jsonDict valueForKey:@"value"] isEqualToString:@"a value here"]);
   
-  jsonString = @" {foo:false,bar:\"this is a string\",asdf:1235} ";
+  jsonString = @" {\"foo\":false,\"bar\":\"this is a string\",\"asdf\":1235} ";
   jsonDict = [NSDictionary dictionaryForJSON:jsonString];
   assert([jsonDict count] == 3);
   assert(![[jsonDict valueForKey:@"foo"] boolValue]);
   assert([[jsonDict valueForKey:@"bar"] isEqualToString:@"this is a string"]);
   assert([[jsonDict valueForKey:@"asdf"] intValue] == 1235);
   
-  jsonString = @"{onekey:10}";
+  jsonString = @"{\"onekey\":10}";
   jsonDict = [NSDictionary dictionaryForJSON:jsonString];
   assert([jsonDict count] == 1);
   assert([[jsonDict valueForKey:@"onekey"] intValue] == 10);
   
-  jsonString = @"{ object: { foo: 'bar' } }";
+  jsonString = @"{ \"object\": { \"foo\": 'bar' } }";
   jsonDict = [NSDictionary dictionaryForJSON:jsonString];
   NSDictionary *embeddedDict = [jsonDict valueForKey:@"object"];
   assert([jsonDict count] == 1);
@@ -63,6 +63,14 @@ int main (int argc, const char * argv[]) {
   assert([embeddedDict count] == 1);
   assert([[embeddedDict valueForKey:@"foo"] isEqualToString:@"bar"]);
   
+  jsonString = @"{\"success\":true,\"user\":{\"name\":\"Nick\",\"id\":1}}";
+  jsonDict = [NSDictionary dictionaryForJSON:jsonString];
+  assert([jsonDict count] == 2);
+  assert([[jsonDict valueForKey:@"success"] boolValue]);
+  embeddedDict = [jsonDict valueForKey:@"user"];
+  assert([embeddedDict count] == 2);
+  assert([[embeddedDict valueForKey:@"name"] isEqualToString:@"Nick"]);
+  assert([[embeddedDict valueForKey:@"id"] intValue] == 1);
   
   // JSON array tests
   jsonString = @"['one', 'two', \"three\"]";
