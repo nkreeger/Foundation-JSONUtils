@@ -63,6 +63,12 @@ int main (int argc, const char * argv[]) {
   assert([embeddedDict count] == 1);
   assert([[embeddedDict valueForKey:@"foo"] isEqualToString:@"bar"]);
   
+  jsonString = @"{ \"weirdstring\" : \"{asdf}\", \"success\" : true }";
+  jsonDict = [NSDictionary dictionaryForJSON:jsonString];
+  assert([jsonDict count] == 2);
+  assert([[jsonDict valueForKey:@"weirdstring"] isEqualToString:@"{asdf}"]);
+  assert([[jsonDict valueForKey:@"success"] boolValue]);
+  
   jsonString = @"{\"success\":true,\"user\":{\"name\":\"Nick\",\"id\":1}}";
   jsonDict = [NSDictionary dictionaryForJSON:jsonString];
   assert([jsonDict count] == 2);
