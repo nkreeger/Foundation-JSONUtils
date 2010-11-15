@@ -1,0 +1,7 @@
+== Foundation+JSONUtils
+== Copyright (c) 2010, Nick Kreeger <nick.kreeger@gmail.com>
+
+== About
+
+This project provides JSON conversion methods to NSString, NSDictionary, and
+NSArray Foundation classes.
