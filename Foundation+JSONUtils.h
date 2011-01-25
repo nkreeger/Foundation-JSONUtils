@@ -36,6 +36,13 @@
 //
 - (NSObject *)JSONValue;
 
+//
+// @brief Returns a JSON string from a given dictionary.
+// @param aDict The dictionary to be converted into to a JSON string.
+// @return A NSString containing the given dictionary into JSON format.
+//
++ (NSString *)JSONFromDictionary:(NSDictionary *)aDict;
+
 @end
 
 

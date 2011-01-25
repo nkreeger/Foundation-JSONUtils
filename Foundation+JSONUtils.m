@@ -39,6 +39,8 @@
                          skipArrays:(BOOL)aSkipArrays
                      outSearchIndex:(NSUInteger *)aOutSearchIndex;
 - (NSUInteger)_json_indexOfNextScanPoint:(NSUInteger)aStartIndex;
+- (NSString *)_jsonStringfromDictionary:(NSDictionary *)aDict;
+- (NSString *)_jsonStringfromArray:(NSArray *)aArray;
 
 @end
 
@@ -281,6 +283,76 @@ GetJSONDictionary(NSString *aJSONString)
   return nil;
 }
 
+- (NSString *)_jsonStringfromDictionary:(NSDictionary *)aDict
+{
+  NSMutableString *json = [NSMutableString stringWithString:@"{"];
+
+  for (NSString *key in aDict) {
+    NSObject *obj = [aDict valueForKey:key];
+
+    if ([obj isKindOfClass:[NSString class]]) {
+      [json appendFormat:@"\"%@\":\"%@\",", key, obj];
+    }
+    else if ([obj isKindOfClass:[NSNumber class]]) {
+      [json appendFormat:@"\"%@\":%@,", key, obj];
+    }
+    else if ([obj isKindOfClass:[NSArray class]]) {
+      [json appendFormat:@"\"%@\": %@,", key, [self _jsonStringfromArray:(NSArray *)obj]];
+    }
+    else if ([obj isKindOfClass:[NSDictionary class]]) {
+      [json appendFormat:@"\"%@\": %@,", key, [self _jsonStringfromDictionary:(NSDictionary *)obj]];
+    }
+    else if ([obj isKindOfClass:[NSDate class]]) {
+      // XXX Rodrigo:
+      // might want to format the date here to something more generic
+      // on my project I created a DateUtils that converts to ISO-8601
+      [json appendFormat:@"\"%@\":\"%@\",", key, (NSDate *)obj];
+    }
+  }
+
+  // Removing the last comma for a valid json string
+  if ([json characterAtIndex:json.length - 1] == ',') {
+    json = [NSMutableString stringWithString:[json substringToIndex:json.length - 1]];
+  }
+
+  [json appendString:@"}"];
+  return json;
+}
+
+- (NSString *)_jsonStringfromArray:(NSArray *)aArray
+{
+  NSMutableString *json = [NSMutableString stringWithString:@"["];
+
+  for (NSObject *obj in aArray) {
+    if ([obj isKindOfClass:[NSString class]]) {
+      [json appendFormat:@"\"%@\",", obj];
+    }
+    else if ([obj isKindOfClass:[NSNumber class]]) {
+      [json appendFormat:@"%@,", obj];
+    }
+    else if ([obj isKindOfClass:[NSArray class]]) {
+      [json appendFormat:@"%@,", [self _jsonStringfromArray:(NSArray *)obj]];
+    }
+    else if ([obj isKindOfClass:[NSDictionary class]]) {
+      [json appendFormat:@"%@,", [self _jsonStringfromDictionary:(NSDictionary *)obj]];
+    }
+    else if ([obj isKindOfClass:[NSDate class]]) {
+      // XXX Rodrigo:
+      // might want to format the date here to something more generic
+      // on my project I created a DateUtils that converts to ISO-8601
+      [json appendFormat:@"\"%@\",", (NSDate *)obj];
+    }
+  }
+
+  // Removing the last comma for a valid json string
+  if ([json characterAtIndex:json.length - 1] == ',') {
+    json = [NSMutableString stringWithString:[json substringToIndex:json.length - 1]];
+  }
+
+  [json appendString:@"]"];
+  return json;
+}
+
 @end
 
 //------------------------------------------------------------------------------
@@ -301,6 +373,11 @@ GetJSONDictionary(NSString *aJSONString)
     }
   }
   return nil;
+}
+
++ (NSString *)JSONFromDictionary:(NSDictionary *)aDict
+{
+  return [[NSString string] _jsonStringfromDictionary:aDict];
 }
 
 @end

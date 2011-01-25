@@ -107,7 +107,30 @@ int main (int argc, const char * argv[]) {
   assert([[jsonArray objectAtIndex:1] count] == 1);
   assert([[[jsonArray objectAtIndex:0] valueForKey:@"foo"] boolValue]);
   assert(![[[jsonArray objectAtIndex:1] valueForKey:@"rab"] boolValue]);
-  
+
+  // Foundation -> JSON Tests
+  NSMutableDictionary *body = [NSMutableDictionary dictionaryWithObject:[NSDate date]
+                                                                 forKey:@"date"];
+  NSMutableArray *changes = [NSMutableArray array];
+  NSMutableDictionary *object = [NSMutableDictionary dictionary];
+  [object setObject:@"D159517B-CA22-408D-957B-1504F9CC97D5" forKey:@"id"];
+  [object setObject:@"Hello World" forKey:@"title"];
+  [object setObject:[NSNumber numberWithInt:1] forKey:@"status"];
+  NSMutableDictionary *change = [NSMutableDictionary dictionary];
+  [change setObject:object forKey:@"object"];
+  [changes addObject:change];
+  object = [NSMutableDictionary dictionary];
+  [object setObject:@"BC7F984C-6F74-42B8-8DC1-1C7EDEB94234" forKey:@"id"];
+  [object setObject:@"Hello Again" forKey:@"title"];
+  [object setObject:[NSNumber numberWithInt:3] forKey:@"status"];
+  change = [NSMutableDictionary dictionary];
+  [change setObject:object forKey:@"object"];
+  [changes addObject:change];
+  [body setObject:changes forKey:@"changes"];
+  NSString *expected = @"{\"date\":\"2011-01-24 19:08:00 -0800\",\"changes\": [{\"object\": {\"id\":\"D159517B-CA22-408D-957B-1504F9CC97D5\",\"title\":\"Hello World\",\"status\":1}},{\"object\": {\"id\":\"BC7F984C-6F74-42B8-8DC1-1C7EDEB94234\",\"title\":\"Hello Again\",\"status\":3}}]}";
+  assert(![expected isEqualToString:[NSString JSONFromDictionary:body]]);
+
+
   NSLog(@"All Tests Passed");
   [pool drain];
   return 0;
